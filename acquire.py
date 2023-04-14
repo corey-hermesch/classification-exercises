@@ -4,9 +4,9 @@ from env import host, user, password
 import os
 import numpy as np
 import pandas as pd
-from scipy import stats
-import matplotlib.pyplot as plt
-import seaborn as sns
+# from scipy import stats
+# import matplotlib.pyplot as plt
+# import seaborn as sns
 np.random.seed(42)
 ### FUNCTIONS 
 
@@ -49,11 +49,13 @@ def get_titanic_data(sql_query="SELECT * FROM passengers"
     if os.path.exists(directory + filename):
         df = pd.read_csv(filename)
         # df = df.drop(columns=['Unnamed: 0']) # would have to drop this unnamed column without index=False below
+        print("csv file found and read")
         return df
     else:
         url = get_db_url('titanic_db')
         df = pd.read_sql(sql_query, url)
         df.to_csv(filename, index=False) # include index=False since this sql pull already has an index
+        print("csv file not found; new data pulled from sql")
         return df
     
 def get_iris_data(sql_query="SELECT * FROM species JOIN measurements USING (species_id)"
@@ -74,11 +76,13 @@ def get_iris_data(sql_query="SELECT * FROM species JOIN measurements USING (spec
     """
     if os.path.exists(directory + filename):
         df = pd.read_csv(filename)
+        print("csv file found and read")
         return df
     else:
         url = get_db_url('iris_db')
         df = pd.read_sql(sql_query, url)
         df.to_csv(filename, index=False)
+        print("csv file not found; new data pulled from sql")
         return df
     
 def get_telco_data(sql_query= """
@@ -88,7 +92,8 @@ def get_telco_data(sql_query= """
                             , internet_service_types.internet_service_type
                             , online_security, online_backup
                             , device_protection, tech_support
-                            , streaming_tv, customers.contract_type_id
+                            , streaming_tv, streaming_movies
+                            , customers.contract_type_id
                             , contract_types.contract_type
                             , paperless_billing, customers.payment_type_id
                             , payment_types.payment_type
@@ -117,9 +122,11 @@ def get_telco_data(sql_query= """
     """
     if os.path.exists(directory + filename):
         df = pd.read_csv(filename)
+        print("csv file found and read")
         return df
     else:
         url = get_db_url('telco_churn')
         df = pd.read_sql(sql_query, url)
         df.to_csv(filename, index=False)
+        print("csv file not found; new data pulled from sql")
         return df
