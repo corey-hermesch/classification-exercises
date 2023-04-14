@@ -2,7 +2,12 @@
 
 from env import host, user, password
 import os
-
+import numpy as np
+import pandas as pd
+from scipy import stats
+import matplotlib.pyplot as plt
+import seaborn as sns
+np.random.seed(42)
 ### FUNCTIONS 
 
 def get_db_url(db_name, user=user, host=host, password=password):
@@ -43,12 +48,12 @@ def get_titanic_data(sql_query="SELECT * FROM passengers"
     """
     if os.path.exists(directory + filename):
         df = pd.read_csv(filename)
-        df = df.drop(columns=['Unnamed: 0'])
+        # df = df.drop(columns=['Unnamed: 0']) # would have to drop this unnamed column without index=False below
         return df
     else:
         url = get_db_url('titanic_db')
         df = pd.read_sql(sql_query, url)
-        df.to_csv(filename)
+        df.to_csv(filename, index=False) # include index=False since this sql pull already has an index
         return df
     
 def get_iris_data(sql_query="SELECT * FROM species JOIN measurements USING (species_id)"
@@ -69,12 +74,11 @@ def get_iris_data(sql_query="SELECT * FROM species JOIN measurements USING (spec
     """
     if os.path.exists(directory + filename):
         df = pd.read_csv(filename)
-        df = df.drop(columns=['Unnamed: 0'])
         return df
     else:
         url = get_db_url('iris_db')
         df = pd.read_sql(sql_query, url)
-        df.to_csv(filename)
+        df.to_csv(filename, index=False)
         return df
     
 def get_telco_data(sql_query= """
@@ -113,10 +117,9 @@ def get_telco_data(sql_query= """
     """
     if os.path.exists(directory + filename):
         df = pd.read_csv(filename)
-        df = df.drop(columns=['Unnamed: 0'])
         return df
     else:
         url = get_db_url('telco_churn')
         df = pd.read_sql(sql_query, url)
-        df.to_csv(filename)
+        df.to_csv(filename, index=False)
         return df
