@@ -31,58 +31,54 @@ def get_mysql_data(sql_query, database):
     return pd.read_sql(sql_query, url)    
     
 def get_titanic_data(sql_query="SELECT * FROM passengers"
-                     , directory='/Users/slick/codeup-data-science/classification-exercises/'
                      , filename="titanic.csv"):
     """
     This function will:
-    -input 3 strings: sql_query, directory, filename 
-      - default query "SELECT * FROM passengers"
-      - default directory is "Users/slick/codeup-data-science/classification-exercises/""
-      - default filename "titanic.csv"
-    - check the directory for filename (csv) existence
+    -input 2 strings: sql_query, filename 
+        default query "SELECT * FROM passengers"
+        default filename "titanic.csv"
+    - check the current working directory for filename (csv) existence
       - return df from that filename if it exists
     - If csv doesn't exist:
       - create a df of the sql_query
       - write df to csv
       - return that df
     """
-    if os.path.exists(directory + filename):
+    if os.path.isfile(filename):
         df = pd.read_csv(filename)
-        # df = df.drop(columns=['Unnamed: 0']) # would have to drop this unnamed column without index=False below
         print("csv file found and read")
         return df
     else:
         url = get_db_url('titanic_db')
         df = pd.read_sql(sql_query, url)
-        df.to_csv(filename, index=False) # include index=False since this sql pull already has an index
-        print("csv file not found; new data pulled from sql")
+        df.to_csv(filename, index=False)
+        print ("csv file not found, data read from sql query, csv created")
         return df
     
+        
 def get_iris_data(sql_query="SELECT * FROM species JOIN measurements USING (species_id)"
-                 , directory='/Users/slick/codeup-data-science/classification-exercises/'
                  , filename="iris.csv"):
     """
     This function will:
-    -input 3 strings: sql_query, directory, filename 
-      - default query "SELECT * FROM species JOIN measurements USING (species_id)"
-      - default directory is "Users/slick/codeup-data-science/classification-exercises/""
-      - default filename "iris.csv"
-    - check the directory for filename (csv) existence
+    -input 2 strings: sql_query, filename 
+        default query "SELECT * FROM passengers"
+        default filename "iris.csv"
+    - check the current directory for filename (csv) existence
       - return df from that filename if it exists
     - If csv doesn't exist:
       - create a df of the sql_query
       - write df to csv
       - return that df
     """
-    if os.path.exists(directory + filename):
+    if os.path.isfile(filename):
         df = pd.read_csv(filename)
-        print("csv file found and read")
+        print ("csv file found and read")
         return df
     else:
         url = get_db_url('iris_db')
         df = pd.read_sql(sql_query, url)
         df.to_csv(filename, index=False)
-        print("csv file not found; new data pulled from sql")
+        print ("csv file not found, data read from sql query, csv created")
         return df
     
 def get_telco_data(sql_query= """
@@ -104,29 +100,28 @@ def get_telco_data(sql_query= """
                         JOIN internet_service_types USING (internet_service_type_id)
                         JOIN payment_types USING (payment_type_id)
                     """
-                    , directory='/Users/slick/codeup-data-science/classification-exercises/'
                     , filename="telco.csv"):
     
     """
     This function will:
-    -input 3 strings: sql_query, directory, filename 
-      - default query "SELECT * FROM customers JOIN'd with contract_types, internet_service_types, payment_types"
-      - default directory is "Users/slick/codeup-data-science/classification-exercises/""
-      - default filename "telco.csv"
-    - check the directory for filename (csv) existence
+    -input 2 strings: sql_query, filename 
+        default query "SELECT * FROM passengers"
+        default filename "telco.csv"
+    - check the current directory for filename (csv) existence
       - return df from that filename if it exists
     - If csv doesn't exist:
       - create a df of the sql_query
       - write df to csv
       - return that df
     """
-    if os.path.exists(directory + filename):
+    if os.path.isfile(filename):
         df = pd.read_csv(filename)
-        print("csv file found and read")
+        print ("csv file found and read")
         return df
     else:
         url = get_db_url('telco_churn')
         df = pd.read_sql(sql_query, url)
         df.to_csv(filename, index=False)
-        print("csv file not found; new data pulled from sql")
+        print ("csv file not found, data read from sql query, csv created")
         return df
+          
