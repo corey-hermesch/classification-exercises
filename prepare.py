@@ -40,22 +40,15 @@ def prep_telco(df):
     - returns cleaned up (prepared) dataframe
     """
     df = df.drop(columns=['customer_id', 'internet_service_type_id', 'contract_type_id', 'payment_type_id'])
-    df = df.rename(columns={'senior_citizen': 'is_senior'
-                       ,'phone_service': 'phone_svc'
-                       ,'multiple_lines': 'mult_lines'
-                       ,'internet_service_type': 'intrnt_svc_type'
-                       ,'streaming_tv': 'strmg_tv'
-                       ,'streaming_movies': 'strmg_movies'
-                       ,'paperless_billing': 'paperless_bill'})
     df.total_charges = df.total_charges.str.replace(' ', '0').astype(float)
     df['gender_encoded'] = df.gender.map({'Male': 0, 'Female': 1})
     df['partner_encoded'] = df.partner.map({'No': 0, 'Yes': 1})
     df['dependendents_encoded'] = df.dependents.map({'No': 0, 'Yes': 1})
-    df['phone_svc_encoded'] = df.phone_svc.map({'No': 0, 'Yes': 1})
-    df['paperless_bill_encoded'] = df.paperless_bill.map({'No': 0, 'Yes': 1})
+    df['phone_service_encoded'] = df.phone_service.map({'No': 0, 'Yes': 1})
+    df['paperless_billing_encoded'] = df.paperless_billing.map({'No': 0, 'Yes': 1})
     df['churn_encoded'] = df.churn.map({'No': 0, 'Yes': 1})
-    dummy_df = pd.get_dummies(df[['mult_lines', 'intrnt_svc_type', 'online_security', 'online_backup'
-                               ,'device_protection', 'tech_support', 'strmg_tv', 'strmg_movies'
+    dummy_df = pd.get_dummies(df[['multiple_lines', 'internet_service_type', 'online_security', 'online_backup'
+                               ,'device_protection', 'tech_support', 'streaming_tv', 'streaming_movies'
                                ,'contract_type', 'payment_type']], drop_first=True)
     df = pd.concat([df, dummy_df], axis=1)
     return df

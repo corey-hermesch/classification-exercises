@@ -29,7 +29,17 @@ def get_mysql_data(sql_query, database):
     """
     url = get_db_url(database)
     return pd.read_sql(sql_query, url)    
-    
+
+def get_csv_export_url(g_sheet_url):
+    '''
+    This function will
+    - take in a string that is a url of a google sheet
+      of the form "https://docs.google.com ... /edit#gid=12345..."
+    - return a string that can be used with pd.read_csv
+    '''
+    csv_url = g_sheet_url.replace('/edit#gid=', '/export?format=csv&gid=')
+    return csv_url
+
 def get_titanic_data(sql_query="SELECT * FROM passengers"
                      , filename="titanic.csv"):
     """
