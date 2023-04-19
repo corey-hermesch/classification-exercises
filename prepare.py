@@ -27,7 +27,7 @@ def prep_titanic(df):
     - returns cleaned up dataframe
     """
     df = df.drop(columns=['passenger_id', 'class', 'embark_town', 'deck', 'age'])
-    dummies_df = pd.get_dummies(df[['pclass', 'sex','embarked']], drop_first=True)
+    dummies_df = pd.get_dummies(df[['sex','embarked']], drop_first=True)
     new_df = pd.concat([df, dummies_df], axis=1)
     return new_df
 
