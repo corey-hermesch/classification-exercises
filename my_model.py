@@ -75,3 +75,23 @@ def get_tree_metrics(y_train, y_pred):
     print(f"Support (1): {support_neg}")
     
     return TN, FP, FN, TP
+
+def get_knn_metrics(X_train, X_validate, y_train, y_validate, weights_='uniform', max_n=20):
+    """
+    This function will
+    - take in X_train, X_validate, y_train, y_validate, weights_, max_n
+      -- weights_: default 'uniform', only other option is 'distance'
+      -- max_n: default 20 - max number of neighbors to try
+    - get train_accuracy and validate_accuracy for n_neighbors = 1-20
+    - return dataframe with results where the index == n_neighbors (1-20)
+    """
+    results = []
+    for i in range(1,max_n+1):
+        knn = KNeighborsClassifier(n_neighbors=i, weights=weights_)
+        knn.fit(X_train, y_train)
+        train_acc = knn.score(X_train, y_train)
+        val_acc = knn.score(X_validate, y_validate)
+        results.append([train_acc, val_acc])
+
+    results_df = pd.DataFrame(results, index=(range(1,max_n+1)), columns=['train_acc', 'val_acc'])
+    return results_df

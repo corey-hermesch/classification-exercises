@@ -31,6 +31,16 @@ def prep_titanic(df):
     new_df = pd.concat([df, dummies_df], axis=1)
     return new_df
 
+def prep_titanic_for_model(df):
+    """
+    - take in titanic dataframe from prep_titanic function
+    - remove non-encoded columns
+    - return df with only numeric columns ready for modeling
+    """
+    drop_cols = ['sex', 'embarked']
+    df = df.drop(columns=drop_cols)
+    return df
+
 def prep_telco(df):
     """
     This function will
@@ -52,6 +62,33 @@ def prep_telco(df):
                                ,'contract_type', 'payment_type']], drop_first=True)
     df = pd.concat([df, dummy_df], axis=1)
     return df
+
+def prep_telco_for_model(df):
+    """
+    This function will
+    - take in telco dataframe from prep_telco function
+    - remove non-encoded columns
+    - remove unneccessary columns (repeated columns)
+    - return df with only numeric columns ready for modeling
+    """
+    # getting rid of non-numeric columns to start the modeling phase
+    drop_cols = ['gender', 'partner', 'dependents', 'phone_service', 'multiple_lines', 'internet_service_type',
+                'online_security', 'online_backup', 'device_protection', 'tech_support', 'streaming_tv', 
+                'streaming_movies', 'contract_type', 'paperless_billing', 'payment_type', 'churn']
+    # make "encoded" df without only the encoded columns for machine learning
+    e_df = df.drop(columns=drop_cols)
+    
+    # phone_service was included in multiple_lines, so drop that phone_service_encoded, too
+    e_df = e_df.drop(columns=['phone_service_encoded'])
+    
+    # Since internet_service_type_None is repeated in several columns, I can delete them. 
+    # A possibly better way is to encode them differently so the column names make more sense. maybe later
+    repeated_cols = ['online_security_No internet service', 'online_backup_No internet service',
+                    'device_protection_No internet service', 'tech_support_No internet service',
+                    'streaming_tv_No internet service', 'streaming_movies_No internet service']
+    e_df = e_df.drop(columns=repeated_cols)
+    
+    return e_df
 
 def split_function(df, target_var):
     """
