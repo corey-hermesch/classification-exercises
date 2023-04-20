@@ -2,21 +2,76 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix, classification_report
 
+# defining function to split train/validate/test into X and y dataframes AND return the baseline accuracy
+def get_X_y_baseline(train, validate, test, target):
+    """
+    This function will
+    - take the train, validate, and test dataframes as well as the target variable (string)
+    - assumes train/validate/test are numeric columns only (i.e. ready for modeling)
+    - split the dataframes into X_train/validate/test and y_train/validate/test
+    - return all 6 dataframes and the baseline_accuracy rate
+    """
+
+    # set X_train/validate/test to be everything but the target
+    X_train = train.drop(columns=[target])
+    X_validate = validate.drop(columns=[target])
+    X_test = test.drop(columns=[target])
+
+    # set y_train/validate/test to be only the target
+    y_train = train[target]
+    y_validate = validate[target]
+    y_test = test[target]
+
+    # Set baseline accuracy
+    baseline_accuracy = (train[target] == 0).mean()
+
+    return X_train, X_validate, X_test, y_train, y_validate, y_test, baseline_accuracy
+
 # defining a function to get metrics for a set of predictions vs a train series
 def get_tree_metrics(y_train, y_pred):
     """
     This functiion will
     - take in a y_train series and a y_pred (result from a classifier.predict)
-    - returns nothing
+    - assumes just two options for confusion matrix, i.e. not 3 or more categories (I think)
     - prints out confusion matrix with row/column labeled with actual/predicted and the unique values in y_train
-    -- (could add in a labels variable to make that prettier (NOT THERE NOW))
+    - returns TN, FP, FN, TP (# of True Negatives, False Positives, False Negatives, True Positives from confusion matrix
     """
     print("CONFUSION MATRIX")
+    conf = confusion_matrix(y_train, y_pred)
     print(pd.DataFrame(
-          confusion_matrix(y_train, y_pred),
+          conf,
           index=[label.astype(str) + '_actual' for label in sorted(y_train.unique())],
           columns=[label.astype(str) + '_predicted' for label in sorted(y_train.unique())])
         )
     print()
     print("Classification Report:")
     print(classification_report(y_train, y_pred))
+    
+    TN, FP, FN, TP = conf.ravel()
+
+    all_ = (TP + TN + FP + FN)
+
+    accuracy = (TP + TN) / all_
+
+    TPR = recall = TP / (TP + FN)
+    FPR = FP / (FP + TN)
+
+    TNR = TN / (FP + TN)
+    FNR = FN / (FN + TP)
+
+    precision =  TP / (TP + FP)
+    f1 =  2 * ((precision * recall) / ( precision + recall))
+
+    support_pos = TP + FN
+    support_neg = FP + TN
+    print(f"Accuracy: {accuracy}\n")
+    print(f"True Positive Rate/Sensitivity/Recall/Power: {TPR}")
+    print(f"False Positive Rate/False Alarm Ratio/Fall-out: {FPR}")
+    print(f"True Negative Rate/Specificity/Selectivity: {TNR}")
+    print(f"False Negative Rate/Miss Rate: {FNR}\n")
+    print(f"Precision/PPV: {precision}")
+    print(f"F1 Score: {f1}\n")
+    print(f"Support (0): {support_pos}")
+    print(f"Support (1): {support_neg}")
+    
+    return TN, FP, FN, TP
