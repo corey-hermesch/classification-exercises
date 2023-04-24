@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.metrics import confusion_matrix, classification_report
 
 # defining function to split train/validate/test into X and y dataframes AND return the baseline accuracy
+# baseline accuracy code needs work. it's hard coded to 0 right now, and it should get the mode
 def get_X_y_baseline(train, validate, test, target):
     """
     This function will
@@ -22,12 +23,14 @@ def get_X_y_baseline(train, validate, test, target):
     y_validate = validate[target]
     y_test = test[target]
 
-    # Set baseline accuracy
-    baseline_accuracy = (train[target] == 0).mean()
-
+    # Set baseline accuracy 
+    
+    baseline_accuracy = (train[target] == train[target].mode()[0]).mean()
+    
     return X_train, X_validate, X_test, y_train, y_validate, y_test, baseline_accuracy
 
 # defining a function to get metrics for a set of predictions vs a train series
+# need to study a bit on what ravel does. which thing does it use for what the positive case is? 0 or 1?
 def get_tree_metrics(y_train, y_pred):
     """
     This functiion will

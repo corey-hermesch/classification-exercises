@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.impute import SimpleImputer
 
 ## FUNCTIONS
 
@@ -23,10 +24,30 @@ def prep_titanic(df):
     """
     This function will
     - take in the titanic dataframe
-    - clean it up (remove useless columns and tack on some dummies columns for 'pclass', 'sex', 'embarked')
+    - clean it up 
+        -- remove useless columns passenger_id, class, embark_town, deck, age
+        -- tack on dummies columns for 'pclass', 'sex', 'embarked'
     - returns cleaned up dataframe
     """
     df = df.drop(columns=['passenger_id', 'class', 'embark_town', 'deck', 'age'])
+    df.embarked = df.embarked.fillna('S') #filling with most common value
+    dummies_df = pd.get_dummies(df[['sex','embarked']], drop_first=True)
+    new_df = pd.concat([df, dummies_df], axis=1)
+    return new_df
+
+# defining a second prepare function to keep age
+def prep_titanic_2(df):
+    """
+    This function will
+    - take in the titanic dataframe
+    - clean it up 
+        -- remove useless columns passenger_id, class, embark_town, deck
+        -- NOTE: keeping the age column; fixing age nulls NOT done here (must use impute_feature)
+        -- tack on dummies columns for 'pclass', 'sex', 'embarked'
+    - returns cleaned up dataframe
+    """
+    df = df.drop(columns=['passenger_id', 'class', 'embark_town', 'deck'])
+    df.embarked = df.embarked.fillna('S') # filling with most common value
     dummies_df = pd.get_dummies(df[['sex','embarked']], drop_first=True)
     new_df = pd.concat([df, dummies_df], axis=1)
     return new_df
@@ -107,5 +128,24 @@ def split_function(df, target_var):
     print(f'Train: {train.shape}')
     print(f'Validate: {validate.shape}')
     print(f'Test: {test.shape}')
+    
+    return train, validate, test
+
+def impute_feature(train, validate, test, feature='age', strat='median'):
+    """
+    This function will
+    - take in train, validate, test dfs
+    - take in a string which is the column name that has nan values
+        -- default is 'age' (built off titanic df)
+    - take in a string which is the strategy to impute values
+        -- default is 'median'
+    - impute nan values in the feature(age) column and fill with new values
+    - return train, validate, test with imputed values
+    """
+    imputer = SimpleImputer(missing_values=np.nan, strategy=strat)
+    imputer = imputer.fit(train[[feature]])
+    train[[feature]] = imputer.transform(train[[feature]])
+    validate[[feature]] = imputer.transform(validate[[feature]])
+    test[[feature]] = imputer.transform(test[[feature]])
     
     return train, validate, test
